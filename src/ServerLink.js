@@ -3,17 +3,18 @@ import './App.css';
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaCircleXmark } from "react-icons/fa6";
 
-const ServerLink = ({ nameSever }) => {
+const ServerLink = ({ serverId, serverName }) => {
   const [statuses, setStatuses] = useState({});
 
   // Function to check one website
-  const checkWebsite = (url, name) => {
+  // Parameter url=urlServer name=serverId
+  const checkWebsite = (url, serverId) => {
     fetch(`http://localhost:5000/ping?url=${encodeURIComponent(url)}`)
       .then((res) => res.json())
       .then((data) => {
         setStatuses((prev) => ({
           ...prev,
-          [name]: {
+          [serverId]: {
             isOnline: data.status === "up",
             url
           }
@@ -24,9 +25,10 @@ const ServerLink = ({ nameSever }) => {
   useEffect(() => {
     // Check all manually defined sites
     const checkAll = () => {
-      checkWebsite("https://www.youtube.com/", "YouTube");
-      checkWebsite("https://www.github.com/", "GitHub");
-      checkWebsite("https://example-database.com", "DEMO");
+      // List of Cloud Website
+      checkWebsite("https://www.youtube.com/", "youtube");
+      checkWebsite("https://githubasd.com/", "githubss");
+      checkWebsite("https://github.com/", "node");
     };
 
     checkAll();
@@ -34,14 +36,14 @@ const ServerLink = ({ nameSever }) => {
     return () => clearInterval(interval);
   }, []);
   return (
-    <a href={statuses[nameSever]?.url} className="linkStyle" target="_blank" rel="noopener noreferrer">
+    <a href={statuses[serverId]?.url} className="linkStyle" target="_blank" rel="noopener noreferrer">
         <div  className="linkContainer">
             { 
-            statuses[nameSever]?.isOnline
+            statuses[serverId]?.isOnline
                 ? <FaCircleCheck size={18} className="iconStyleOnline" />
                 : <FaCircleXmark size={18} className="iconStyleOffline" />
             }
-            <p>{nameSever}</p>
+            <p style={{ fontSize: "18px", paddingBottom: "2px" }}>{serverName}</p>
         </div>
     </a>
   )

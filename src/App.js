@@ -13,15 +13,11 @@ function App() {
           <div className="serverTypes">
             <div className="app">
               <h4>Application</h4>
-              <ServerLink nameSever="YouTube" />
-              <ServerLink nameSever="GitHub" />
+              <ServerLink serverId="youtube" serverName="Youtube" />
+              <ServerLink serverId="githubss" serverName="Github" />
             </div>
 
-            <div className="data">
-              <h4>Database</h4>
-              <ServerLink nameSever="Database" />
-              <ServerLink nameSever="Database" />
-            </div>
+            
           </div>
         </div>
 
@@ -30,11 +26,9 @@ function App() {
           <div className="serverTypes">
             <div className="app">
               <h4>Application</h4>
-              <ServerLink nameSever="ORMB PKG Application" />
             </div>
             <div className="data">
               <h4>Database</h4>
-              <ServerLink nameSever="ORMB PKG DB" />
             </div>
           </div>
         </div>

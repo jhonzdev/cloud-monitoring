@@ -25,3 +25,5 @@ app.get('/ping', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';

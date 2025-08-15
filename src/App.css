@@ -15,7 +15,7 @@
 }
 
 .server{
-  width: 60%;
+  width: 100%;
   text-align: center;
 }
 
@@ -23,11 +23,13 @@
   display: flex;
   justify-content: space-around;
   margin-top: 52px;
+  align-items: flex-start;
 }
 
 .iconStyleOnline {
   color: #3df172;
   margin-right: 8px;
+
 }
 
 .iconStyleOffline {
@@ -47,7 +49,6 @@
   color: white;
   flex-direction: row;
   display: flex;
-  width: 350px;
   border-radius: 30px;
   padding-left: 8px;
   height: 30px;
@@ -64,16 +65,22 @@
 
 .app {
   background-color: #1f2123;
-  padding-left: 14px;
-  padding-right: 14px;
+  margin-left: 14px;
+  margin-right: 14px;
   border-radius: 20px;
+  padding-left: 12px;
+  padding-right: 12px;
+  flex: 1;
 }
 
 .data{
   background-color: #1f2123;
-  padding-left: 14px;
-  padding-right: 14px;
+  margin-left: 14px;
+  margin-right: 14px;
   border-radius: 20px;
+  padding-left: 12px;
+  padding-right: 12px;
+  flex: 1;
 }
 
 /* Tablet (≤1024px) */
@@ -196,9 +203,8 @@
   }
 
   .app {
-    width: 100%;
+    width: 100%;    
     margin-bottom: 24px;
-    margin-left: 14px;
   }
 
   .data {
