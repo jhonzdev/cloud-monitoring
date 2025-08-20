@@ -1,0 +1,134 @@
+
+@media (max-width: 1650px) {
+  .linkContainer {
+    width: 320px;
+  }
+
+  .serverContainer {
+    display: flex;
+    flex-direction: row;
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+}
+
+@media (max-width: 1530px) {
+  .linkContainer {
+    width: 300px;
+  }
+
+  .serverContainer {
+    display: flex;
+    flex-direction: row;
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+}
+
+@media (max-width: 1430px) {
+  .linkContainer {
+    width: 100%;
+    margin-right: 100px;
+  }
+
+  .server{
+    width: 100%;
+    text-align: center;
+  }
+
+  .serverContainer {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .app {
+    width: 100%;
+    padding-left: 14px;
+    padding-right: 20px;
+    margin-right: 14px;
+    border-radius: 20px;
+  }
+
+  .data{
+    width: 100%;
+    padding-left: 14px;
+    padding-right: 20px;
+    border-radius: 20px;
+  }
+}
+
+/* Tablet (≤1024px) ==================================================*/
+@media (max-width: 1110px) {
+  .serverContainer {
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .server{
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .linkContainer {
+    width: 100%;
+  }
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 970px) {
+  .linkContainer {
+    width: 100%;
+  }
+}
+
+@media (max-width: 880px) {
+  .linkContainer {
+    width: 100%;
+  }
+
+  .serverContainer{
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+  .serverContainer {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .server{
+    width: 100%;
+    text-align: center;
+  }
+
+  .app {
+    width: 100%;    
+    margin-bottom: 24px;
+  }
+
+  .data {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .linkContainer {
+    width: 100%;
+  }
+
+  .serverTypes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 75px;
+  }
+}
