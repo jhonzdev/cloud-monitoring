@@ -1,4 +1,123 @@
+.serverContainerList {
+  display: flex;
+  flex-direction: row;
+  border-bottom: gray 1px solid;
+}
+
+h5 {
+  background-color: red;
+  width: 126px;
+  margin-right: 10px;
+}
+
+.ItemContainerList {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+}
+
+.itemStyle {
+  font-size: 14px;
+  width: 126px;
+  margin-right: 10px;
+  margin-top: 14px;
+  margin-bottom: 0px;
+  background-color: red;
+  max-width: 126px;    /* limit width */
+  white-space: nowrap; /* keep text on one line */
+  overflow: hidden;    /* hide overflow text */
+  text-overflow: ellipsis; /* add "..." */
+}
+
+.mainServerListContainer {
+  height: 300px;     /* set a height */
+  overflow-y: auto;  /* vertical scroll if needed */
+  overflow-x: hidden; /* hide horizontal scroll */
+
+    scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+h5 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+/* ======== SPIN ======== */
+
+.lastRegreshStyle {
+  font-size: 10px;
+  font-weight: bold;
+  color: black;
+  margin: 0px;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite; /* 2s = 1 full rotation */
+  color: black;
+}
+
+.spinContainer {
+  background-color: #E0E7EF;
+  padding-left: 4px;
+  padding-right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 26px;
+  margin-left: 6px;
+  height: 20px;
+}
+
+.timePosition{
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: row;
+  border: solid .5px black;
+  border-radius: 26px;
+}
+
+.timeTextContainer {
+  background-color: #E0E7EF;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 26px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  height: 20px;
+}
+
+.mainDivForTimeSpenner {
+  display: flex;
+  flex-direction: row;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ======== SPIN ======== */
+
+
 /* ======== GENERAL STYLE START ======== */
+
+td {
+    max-width: 100px;       /* set width limit */
+    white-space: nowrap;    /* prevent wrapping */
+    overflow: hidden;       /* hide overflow text */
+    text-overflow: ellipsis; /* add "..." */
+}
 
 /* Hide CSS SCROLL VERTICAL VIEW */
 html, body {
@@ -13,6 +132,11 @@ html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   width: 0;                  /* Chrome/Safari/Edge */
   height: 0;
+}
+
+.timeCheckContainer {
+  background-color: #E0E7EF;
+
 }
 
 /* ======== GENERAL STYLE END ======== */
@@ -40,10 +164,6 @@ body::-webkit-scrollbar {
 @keyframes spin-slow {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 2s linear infinite; /* 2s = 1 full rotation */
 }
 
 .selectConintaner {
@@ -104,7 +224,6 @@ body::-webkit-scrollbar {
 
 .containerHeader {
   border-bottom: gray 1px solid;
-  margin-bottom: 28px;
 }
 
 .formTItle {
@@ -224,8 +343,8 @@ body::-webkit-scrollbar {
 }
 
 .linkContainer {
-  background-color: #5473a1;
-  color: #FFFFFF;
+  background-color: white;
+  color: black;
   flex-direction: row;
   display: flex;
   border-radius: 30px;

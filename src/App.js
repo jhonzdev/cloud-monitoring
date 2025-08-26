@@ -5,7 +5,7 @@ import axios from "axios";
 import InputServer from './InputServer';
 import { FiServer } from "react-icons/fi";
 import DropDownServer from './DropDownServer';
-import { AiOutlineReload } from "react-icons/ai";
+import { ImLoop2 } from "react-icons/im";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +14,7 @@ function App() {
   const closeModal = () => setIsOpen(false);
 
   const [servers, setIServers] = useState([]);
-  const [form, setForm] = useState({ serverName: "", serverURL: "" });
+  const [form, setForm] = useState({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
 
 
 
@@ -26,7 +26,7 @@ function App() {
   // Add new item
   const addItem = () => {
     axios.post("http://localhost:5000/servers", form).then(() => {
-      setForm({ serverName: "", serverURL: "" });
+      setForm({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
       axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
     });
   };
@@ -38,8 +38,10 @@ function App() {
       </div>
       
       <div className='timePosition'>
-        <AiOutlineReload className="w-6 h-6 animate-spin-slow" />
         <ServerLink timeCheck={false} />
+        <div className='spinContainer'>
+          <ImLoop2 className="animate-spin-slow" size={12}/>
+        </div>
       </div>
 
       <button
@@ -69,9 +71,10 @@ function App() {
               background: "#fff",
               padding: "20px",
               borderRadius: "10px",
-              minWidth: "300px",
+              minWidth: "280px",
+              height: "460px",
               boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
-              animation: "slideDown 0.3s ease-out",
+              animation: "slideDown 0.3s ease-out"
             }}
           >
             
@@ -105,9 +108,9 @@ function App() {
               <div className='dropDownContainer'>
                 <DropDownServer
                   label="Type"
-                  name="type"
+                  name="serverType"
                   type={true}
-                  value={form.type}
+                  value={form.serverType}
                   onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
                   placeholder="Choose Type"
                   options={[
@@ -118,9 +121,9 @@ function App() {
 
                 <DropDownServer
                   label="Environment"
-                  name="environment"
+                  name="serverEnvironment"
                   type={false}
-                  value={form.environment}
+                  value={form.serverEnvironment}
                   onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
                   placeholder="Choose Environment"
                   options={[
@@ -130,15 +133,6 @@ function App() {
                 />
               </div>
               
-              <p>---TEST---</p>
-              <ul>
-                {servers.map((servers) => (
-                  <li key={servers.id}>
-                    {servers.serverName} - {servers.serverUrl}
-                  </li>
-                ))}
-              </ul>
-
               <div style={{ textAlign: "right", borderTop: "1px solid gray", marginTop: "38px", paddingTop: "14px"  }}>
                 <button
                   type="button"
@@ -169,6 +163,49 @@ function App() {
               </div>
             </form>
           </div>
+          <div
+            style={{
+              background: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              minWidth: "480px",
+              height: "460px",
+              boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
+              animation: "slideDown 0.3s ease-out",
+              marginLeft: "14px"
+            }}
+          >
+            <div className='containerHeader'>
+              <div className='formContainerHeader'>
+                <FiServer size={24} />
+                <p className='formTItle'>List of Servers</p>
+              </div>
+              <p className='formDetails'>You can update or delete your server.</p>
+            </div>
+
+            
+              <div className='serverContainerList'>
+                <h5>Server Name</h5>
+                <h5>Server URL</h5>
+                <h5>Server Type</h5>
+                <h5>Server Environment</h5>
+                <h5>ACTIONS</h5>
+              </div>
+
+              <div className='mainServerListContainer'>
+                <div>
+                  {servers.map((servers) => (
+                    <div className='ItemContainerList' key={servers.serverId}>
+                      <p className='itemStyle'>{servers.serverName}</p>
+                      <p className='itemStyle'>{servers.serverURL}</p>
+                      <p className='itemStyle'>{servers.serverType}</p>
+                      <p className='itemStyle'>{servers.serverEnvironment}</p>
+                      <p className='itemStyle'>EDIT | DELETE</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+          </div>
         </div>
       )}
       {/* ============================ Modal ============================ */}
@@ -180,11 +217,11 @@ function App() {
           <div className="serverTypes">
             <div className="app">
               <h4>Application</h4>
-              <ServerLink serverId="youtube" serverName="Youtube" timeCheck={true} />
-              <ServerLink serverId="githubss" serverName="Github {Error}" timeCheck={true}/>
-              <ServerLink serverId="github" serverName="Github" timeCheck={true}/>
-              <ServerLink serverId="node" serverName="Node Js" timeCheck={true}/>
-              <ServerLink serverId="laravel" serverName="Laravel" timeCheck={true}/>
+              {servers
+                .filter(server => server.serverType === "non-production" && server.serverEnvironment === "application")
+                .map((servers) => (
+                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true} key={servers.serverId} />
+              ))}
             </div>
           </div>
         </div>
@@ -194,13 +231,20 @@ function App() {
           <div className="serverTypes">
             <div className="app">
               <h4>Application</h4>
-              <ServerLink serverId="w3school" serverName="W3School" timeCheck={true}/>
-              <ServerLink serverId="shopee" serverName="Shopee" timeCheck={true}/>
+              {servers
+                .filter(server => server.serverType === "production" && server.serverEnvironment === "application")
+                .map((servers) => (
+                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} />
+              ))}
+              <ServerLink serverId="ETOY" serverName="Ekang" timeCheck={true} />
             </div>
             <div className="data">
               <h4>Database</h4>
-              <ServerLink serverId="lazada" serverName="Lazada" timeCheck={true}/>
-              <ServerLink serverId="bpi" serverName="BPI" timeCheck={true}/>
+              {servers
+                .filter(server => server.serverType === "production" && server.serverEnvironment === "database")
+                .map((servers) => (
+                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} />
+              ))}
             </div>
           </div>
         </div>

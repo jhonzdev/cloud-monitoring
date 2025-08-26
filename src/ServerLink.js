@@ -2,16 +2,25 @@ import { useState, useEffect } from "react";
 import './App.css';
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaCircleXmark } from "react-icons/fa6";
+import axios from "axios";
 
 const ServerLink = ({ 
   serverId = null, 
   serverName = "", 
   timeCheck = false
-}) => {
-  // const db = require('better-sqlite3')('/db/database.db');
+  }) => {
 
   const [statuses, setStatuses] = useState({});
-    const [lastRefresh, setLastRefresh] = useState(null);
+  const [lastRefresh, setLastRefresh] = useState(null);
+  const [servers, setIServers] = useState([]);
+
+  // Load data
+  useEffect(() => {
+    axios.get("http://localhost:5000/servers").then(res => {
+      setIServers(res.data)
+    });
+    
+  }, []);
   
   // Function to check one website
   // Parameter url=urlServer name=serverId
@@ -33,15 +42,11 @@ const ServerLink = ({
     // Check all manually defined sites
     const checkAll = () => {
       // List of Cloud Website
-      checkWebsite("https://www.youtube.com/", "youtube");
-      checkWebsite("https://githubasd.com/", "githubss");
-      checkWebsite("https://github.com/", "github");
-      checkWebsite("https://nodejs.org/en", "node");
-      checkWebsite("https://laravel.com/", "laravel");
-      checkWebsite("https://www.w3schools.com/php/", "w3school");
-      checkWebsite("https://shopee.ph/", "shopee");
-      checkWebsite("https://www.lazada.com.ph/", "lazada");
-      checkWebsite("https://www.bpi.com.ph/", "bpi");
+      servers.forEach(server => {
+        checkWebsite(server.serverURL, server.serverId);
+      });
+
+      checkWebsite("ETANG", "ETANG");
 
       // update the timestamp
       if (typeof setLastRefresh === "function") {
@@ -52,21 +57,27 @@ const ServerLink = ({
     checkAll();
     const interval = setInterval(checkAll, 5000); // refresh every 5 seconds
     return () => clearInterval(interval);
-  }, [setLastRefresh]);
+  }, [servers, setLastRefresh]);
   return (
     <div>
     {timeCheck 
       ? (<a href={statuses[serverId]?.url} className="linkStyle" target="_blank" rel="noopener noreferrer">
+          
           <div  className="linkContainer">
-              { 
+              {
               statuses[serverId]?.isOnline
                   ? <FaCircleCheck size={18} className="iconStyleOnline" />
                   : <FaCircleXmark size={18} className="iconStyleOffline" />
               }
-              <p style={{ fontSize: "16", paddingBottom: "3px" }}>{serverName}</p>
+              <p style={{ fontSize: "16", paddingBottom: "3px", overflow: "hidden", maxWidth: "126px" }}>{serverName}</p>
           </div>
       </a> )
-      : (<div><p style={{ color:"black", margin: 0, marginLeft: 4, fontSize: 14  }}>Last Regreshed: {lastRefresh}</p></div> )
+      : (<div className="mainDivForTimeSpenner">
+          <div className="timeTextContainer">
+            <p className="lastRegreshStyle">Last Regreshed: </p> 
+          </div>
+          <p style={{ color:"black", marginLeft: 4, fontSize: 10, fontWeight: "bold"  }}>{lastRefresh}</p>
+        </div>)
     }
     </div>
   )

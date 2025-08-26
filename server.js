@@ -36,7 +36,9 @@ db.prepare(`
   CREATE TABLE IF NOT EXISTS servers (
     serverId INTEGER PRIMARY KEY AUTOINCREMENT,
     serverName TEXT NOT NULL,
-    serverURL TEXT NOT NULL
+    serverURL TEXT NOT NULL,
+    serverType TEXT NOT NULL,
+    serverEnvironment TEXT NOT NULL
   )
 `).run();
 
@@ -48,9 +50,9 @@ app.get('/servers', (req, res) => {
 
 // CREATE - Add new Server
 app.post('/servers', (req, res) => {
-  const { serverName, serverURL } = req.body;
-  const stmt = db.prepare('INSERT INTO servers (serverName, serverURL) VALUES (?, ?)');
-  stmt.run(serverName, serverURL);
+  const { serverName, serverURL, serverType, serverEnvironment } = req.body;
+  const stmt = db.prepare('INSERT INTO servers (serverName, serverURL, serverType, serverEnvironment) VALUES (?, ?, ?, ?)');
+  stmt.run(serverName, serverURL, serverType, serverEnvironment);
   res.json({ status: 'Server added' });
 });
 
@@ -58,7 +60,7 @@ app.post('/servers', (req, res) => {
 app.put('/servers/:serverId', (req, res) => {
   const { serverName, serverURL } = req.body;
   const { serverId } = req.params;
-  const stmt = db.prepare('UPDATE items SET serverName = ?, serverURL = ? WHERE serverId = ?');
+  const stmt = db.prepare('UPDATE servers SET serverName = ?, serverURL = ? WHERE serverId = ?');
   stmt.run(serverName, serverURL, serverId);
   res.json({ status: 'Server updated' });
 });
