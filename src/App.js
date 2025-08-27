@@ -6,6 +6,8 @@ import InputServer from './InputServer';
 import { FiServer } from "react-icons/fi";
 import DropDownServer from './DropDownServer';
 import { ImLoop2 } from "react-icons/im";
+import { TbEdit } from "react-icons/tb";
+import { RiDeleteBin5Line } from "react-icons/ri";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +29,13 @@ function App() {
   const addItem = () => {
     axios.post("http://localhost:5000/servers", form).then(() => {
       setForm({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
+      axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
+    });
+  };
+
+  // Delete item
+  const deleteItem = (serverId) => {
+    axios.delete(`http://localhost:5000/servers/${serverId}`).then(() => {
       axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
     });
   };
@@ -200,7 +209,12 @@ function App() {
                       <p className='itemStyle'>{servers.serverURL}</p>
                       <p className='itemStyle'>{servers.serverType}</p>
                       <p className='itemStyle'>{servers.serverEnvironment}</p>
-                      <p className='itemStyle'>EDIT | DELETE</p>
+                      <div className='itemStyle'>
+                        <button ><TbEdit size={18} /></button>
+                        <button onClick={() => deleteItem(servers.serverId)}><RiDeleteBin5Line size={18} /></button>
+                        
+                        
+                      </div>
                     </div>
                   ))}
                 </div>

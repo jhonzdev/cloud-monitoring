@@ -5,7 +5,6 @@
 }
 
 h5 {
-  background-color: red;
   width: 126px;
   margin-right: 10px;
 }
@@ -23,7 +22,6 @@ h5 {
   margin-right: 10px;
   margin-top: 14px;
   margin-bottom: 0px;
-  background-color: red;
   max-width: 126px;    /* limit width */
   white-space: nowrap; /* keep text on one line */
   overflow: hidden;    /* hide overflow text */
@@ -34,8 +32,7 @@ h5 {
   height: 300px;     /* set a height */
   overflow-y: auto;  /* vertical scroll if needed */
   overflow-x: hidden; /* hide horizontal scroll */
-
-    scrollbar-width: none;     /* Firefox */
+  scrollbar-width: none;     /* Firefox */
   -ms-overflow-style: none;  /* IE and Edge */
 }
 
