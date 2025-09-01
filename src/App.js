@@ -1,6 +1,6 @@
 import ServerLink from './ServerLink';
 import clientLogo from './assets/ey.png';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import InputServer from './InputServer';
 import { FiServer } from "react-icons/fi";
@@ -10,28 +10,52 @@ import { TbEdit } from "react-icons/tb";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
 function App() {
+  const serverRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
-
+  const [editingId, setEditingId] = useState(null);
   const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setEditingId(null);
+    setForm({
+      serverName: "",
+      serverURL: "",
+      serverType: "",
+      serverEnvironment: ""
+    });
+  };
 
   const [servers, setIServers] = useState([]);
   const [form, setForm] = useState({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
-
-
 
   // Load data
   useEffect(() => {
     axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
   }, []);
 
-  // Add new item
-  const addItem = () => {
-    axios.post("http://localhost:5000/servers", form).then(() => {
-      setForm({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
-      axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
-    });
-  };
+  const saveItem = () => {
+    if (!form.serverName || !form.serverURL || !form.serverType || !form.serverEnvironment) {
+      alert("All fields are required!");
+      return;
+    }
+
+    serverRef.current?.reloadServers();
+    console.log(serverRef.current);
+
+    if(editingId){
+      axios.put(`http://localhost:5000/servers/${editingId}`, form).then(() => {
+        setForm({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
+        setEditingId(null);
+        axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
+      });
+    } else {
+      axios.post("http://localhost:5000/servers", form).then(() => {
+        setForm({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
+        axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
+      });
+    }
+  }
 
   // Delete item
   const deleteItem = (serverId) => {
@@ -39,6 +63,13 @@ function App() {
       axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
     });
   };
+
+  // // Delete item
+  // const updateItem = (serverId, updatedData) => {
+  //   axios.put(`http://localhost:5000/servers/${serverId}`, updatedData).then(() => {
+  //     axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
+  //   });
+  // };
 
   return (
     <div className='containerASD'>
@@ -90,7 +121,7 @@ function App() {
             <div className='containerHeader'>
               <div className='formContainerHeader'>
                 <FiServer size={24} />
-                <p className='formTItle'>New Server</p>
+                <p className='formTItle'>{editingId ? "Update Server" : "New Server"}</p>
               </div>
               <p className='formDetails'>Add a server you want to track. You can edit this later.</p>
             </div>
@@ -158,7 +189,7 @@ function App() {
                 </button>
                 <button
                   type="button"
-                  onClick={addItem}
+                  onClick={saveItem}
                   style={{
                     padding: "8px 15px",
                     backgroundColor: "#4CAF50",
@@ -167,7 +198,7 @@ function App() {
                     borderRadius: "5px",
                   }}
                 >
-                  Save
+                  {editingId ? "Update Item" : "Save Item"}
                 </button>
               </div>
             </form>
@@ -210,10 +241,18 @@ function App() {
                       <p className='itemStyle'>{servers.serverType}</p>
                       <p className='itemStyle'>{servers.serverEnvironment}</p>
                       <div className='itemStyle'>
-                        <button ><TbEdit size={18} /></button>
-                        <button onClick={() => deleteItem(servers.serverId)}><RiDeleteBin5Line size={18} /></button>
-                        
-                        
+                        <div style={{ flexDirection: 'row', display: 'flex'}}> 
+                          <div style={{ cursor: 'pointer', marginRight: 28 }} 
+                            onClick={() => {
+                              setForm({
+                                serverName: servers.serverName,
+                                serverURL: servers.serverURL,
+                                serverType: servers.serverType,
+                                serverEnvironment: servers.serverEnvironment
+                              }); 
+                              setEditingId(servers.serverId)}}><TbEdit size={18} /></div>
+                          <div style={{ cursor: 'pointer' }} onClick={() => deleteItem(servers.serverId)}><RiDeleteBin5Line size={18} /></div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -234,7 +273,7 @@ function App() {
               {servers
                 .filter(server => server.serverType === "non-production" && server.serverEnvironment === "application")
                 .map((servers) => (
-                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true} key={servers.serverId} />
+                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true} key={servers.serverId} href={servers.serverURL}/>
               ))}
             </div>
           </div>
@@ -248,16 +287,15 @@ function App() {
               {servers
                 .filter(server => server.serverType === "production" && server.serverEnvironment === "application")
                 .map((servers) => (
-                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} />
+                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} href={servers.serverURL}/>
               ))}
-              <ServerLink serverId="ETOY" serverName="Ekang" timeCheck={true} />
             </div>
             <div className="data">
               <h4>Database</h4>
               {servers
                 .filter(server => server.serverType === "production" && server.serverEnvironment === "database")
                 .map((servers) => (
-                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} />
+                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} href={servers.serverURL} />
               ))}
             </div>
           </div>

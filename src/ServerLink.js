@@ -1,25 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import './App.css';
 import { FaCircleCheck } from "react-icons/fa6";
 import { FaCircleXmark } from "react-icons/fa6";
 import axios from "axios";
 
-const ServerLink = ({ 
+const ServerLink = forwardRef(({ 
   serverId = null, 
   serverName = "", 
-  timeCheck = false
-  }) => {
+  timeCheck = false,
+  href = ""
+}, ref) => {
 
   const [statuses, setStatuses] = useState({});
   const [lastRefresh, setLastRefresh] = useState(null);
   const [servers, setIServers] = useState([]);
 
-  // Load data
-  useEffect(() => {
+  const loadServers = () => {
     axios.get("http://localhost:5000/servers").then(res => {
       setIServers(res.data)
     });
+
+    const checkAll = () => {
+      // List of Cloud Website
+      servers.forEach(server => {
+        checkWebsite(server.serverURL, server.serverId);
+      });
+
+      // update the timestamp
+      if (typeof setLastRefresh === "function") {
+        setLastRefresh(new Date().toLocaleTimeString());
+      }
+    };
     
+    checkAll();
+  };
+
+  // Load data
+  useImperativeHandle(ref, () => ({
+    reloadServers: loadServers,
+    
+  }));
+
+  useEffect(() => {
+    loadServers();
   }, []);
   
   // Function to check one website
@@ -46,14 +69,12 @@ const ServerLink = ({
         checkWebsite(server.serverURL, server.serverId);
       });
 
-      checkWebsite("ETANG", "ETANG");
-
       // update the timestamp
       if (typeof setLastRefresh === "function") {
         setLastRefresh(new Date().toLocaleTimeString());
       }
     };
-
+    
     checkAll();
     const interval = setInterval(checkAll, 5000); // refresh every 5 seconds
     return () => clearInterval(interval);
@@ -61,7 +82,7 @@ const ServerLink = ({
   return (
     <div>
     {timeCheck 
-      ? (<a href={statuses[serverId]?.url} className="linkStyle" target="_blank" rel="noopener noreferrer">
+      ? (<a href={href} className="linkStyle" target="_blank" rel="noopener noreferrer">
           
           <div  className="linkContainer">
               {
@@ -81,6 +102,6 @@ const ServerLink = ({
     }
     </div>
   )
-};
+});
 
 export default ServerLink;

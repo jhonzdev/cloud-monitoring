@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const Database = require('better-sqlite3');
+const path = require("path");
 
 const app = express();
 const PORT = 5000;
@@ -9,6 +10,8 @@ const PORT = 5000;
 app.use(cors()); // Allow React dev server to access API
 app.use(express.json());
 
+
+// =========================== API SECTION ===========================
 // API endpoint to check website status
 app.get('/ping', async (req, res) => {
   const url = req.query.url;
@@ -24,12 +27,9 @@ app.get('/ping', async (req, res) => {
   }
 });
 
-
-
 // =========================== DATABASE SECTION END ===========================
 // Connect to SQLite DB
 const db = new Database('mydb.sqlite');
-
 
 // Create table if not exists
 db.prepare(`
@@ -58,10 +58,10 @@ app.post('/servers', (req, res) => {
 
 // UPDATE - Edit Server
 app.put('/servers/:serverId', (req, res) => {
-  const { serverName, serverURL } = req.body;
+  const { serverName, serverURL, serverType, serverEnvironment } = req.body;
   const { serverId } = req.params;
-  const stmt = db.prepare('UPDATE servers SET serverName = ?, serverURL = ? WHERE serverId = ?');
-  stmt.run(serverName, serverURL, serverId);
+  const stmt = db.prepare('UPDATE servers SET serverName = ?, serverURL = ?, serverType = ?, serverEnvironment = ? WHERE serverId = ?');
+  stmt.run(serverName, serverURL, serverType, serverEnvironment, serverId);
   res.json({ status: 'Server updated' });
 });
 
@@ -73,14 +73,20 @@ app.delete('/servers/:serverId', (req, res) => {
   res.json({ status: 'Server deleted' });
 });
 
+// =========================== FRONTEND (React build) ===========================
+
+// Serve static files from React build folder
+app.use(express.static(path.join(__dirname, "build")));
+
+// Catch-all route -> must be LAST
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
+
+// =========================== START SERVER ===========================
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-// =========================== DATABASE SECTION END ===========================
-
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-// validating if table is now created.
-const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
-console.log("Tables in DB:", tables);
