@@ -1,6 +1,6 @@
 import ServerLink from './ServerLink';
 import clientLogo from './assets/ey.png';
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import InputServer from './InputServer';
 import { FiServer } from "react-icons/fi";
@@ -10,7 +10,6 @@ import { TbEdit } from "react-icons/tb";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
 function App() {
-  const serverRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const openModal = () => setIsOpen(true);
@@ -29,19 +28,56 @@ function App() {
   const [servers, setIServers] = useState([]);
   const [form, setForm] = useState({ serverName: "", serverURL: "", serverType: "", serverEnvironment: "" });
 
-  // Load data
+  // ------------------------------
+  const [statuses, setStatuses] = useState({});
+  const [lastRefresh, setLastRefresh] = useState(null);
+
   useEffect(() => {
     axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
   }, []);
+
+  // Function to check one website
+  // Parameter url=urlServer name=serverId
+  const checkWebsite = (url, serverIdStats) => {
+    fetch(`http://localhost:5000/ping?url=${encodeURIComponent(url)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setStatuses((prev) => ({
+          ...prev,
+          [serverIdStats]: {
+            isOnline: data.status === "up",
+            url
+          }
+        }));
+      })
+  };
+
+  useEffect(() => {
+    // Check all manually defined sites
+    const checkAll = () => {
+      // List of Cloud Website
+      servers.forEach(server => {
+        checkWebsite(server.serverURL, server.serverId);
+      });
+
+      // update the timestamp
+      if (typeof setLastRefresh === "function") {
+        setLastRefresh(new Date().toLocaleTimeString());
+      }
+    };
+    
+    checkAll();
+    const interval = setInterval(checkAll, 5000); // refresh every 5 seconds
+    return () => clearInterval(interval);
+  }, [servers, setLastRefresh]);
+
+  // ------------------------------
 
   const saveItem = () => {
     if (!form.serverName || !form.serverURL || !form.serverType || !form.serverEnvironment) {
       alert("All fields are required!");
       return;
     }
-
-    serverRef.current?.reloadServers();
-    console.log(serverRef.current);
 
     if(editingId){
       axios.put(`http://localhost:5000/servers/${editingId}`, form).then(() => {
@@ -64,13 +100,6 @@ function App() {
     });
   };
 
-  // // Delete item
-  // const updateItem = (serverId, updatedData) => {
-  //   axios.put(`http://localhost:5000/servers/${serverId}`, updatedData).then(() => {
-  //     axios.get("http://localhost:5000/servers").then(res => setIServers(res.data));
-  //   });
-  // };
-
   return (
     <div className='containerASD'>
       <div className="logoContainer">
@@ -78,7 +107,12 @@ function App() {
       </div>
       
       <div className='timePosition'>
-        <ServerLink timeCheck={false} />
+        <div className="mainDivForTimeSpenner">
+          <div className="timeTextContainer">
+            <p className="lastRegreshStyle">Last Regreshed: </p> 
+          </div>
+          <p style={{ color:"black", marginLeft: 4, fontSize: 10, fontWeight: "bold"  }}>{lastRefresh}</p>
+        </div>
         <div className='spinContainer'>
           <ImLoop2 className="animate-spin-slow" size={12}/>
         </div>
@@ -88,7 +122,7 @@ function App() {
         onClick={openModal}
         className='modalButton'
       >
-        Add Server
+        Server        
       </button>
 
       {/* ============================ Modal ============================ */}
@@ -273,7 +307,7 @@ function App() {
               {servers
                 .filter(server => server.serverType === "non-production" && server.serverEnvironment === "application")
                 .map((servers) => (
-                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true} key={servers.serverId} href={servers.serverURL}/>
+                  <ServerLink serverName={servers.serverName} key={servers.serverId} serverHref={servers.serverURL} serverStatus={statuses[servers.serverId]?.isOnline}/>
               ))}
             </div>
           </div>
@@ -287,7 +321,7 @@ function App() {
               {servers
                 .filter(server => server.serverType === "production" && server.serverEnvironment === "application")
                 .map((servers) => (
-                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} href={servers.serverURL}/>
+                  <ServerLink serverName={servers.serverName} key={servers.serverId} serverHref={servers.serverURL}  serverStatus={statuses[servers.serverId]?.isOnline} />
               ))}
             </div>
             <div className="data">
@@ -295,7 +329,7 @@ function App() {
               {servers
                 .filter(server => server.serverType === "production" && server.serverEnvironment === "database")
                 .map((servers) => (
-                  <ServerLink serverId={servers.serverId} serverName={servers.serverName} timeCheck={true}  key={servers.serverId} href={servers.serverURL} />
+                  <ServerLink serverName={servers.serverName} key={servers.serverId} serverHref={servers.serverURL}  serverStatus={statuses[servers.serverId]?.isOnline} />
               ))}
             </div>
           </div>
